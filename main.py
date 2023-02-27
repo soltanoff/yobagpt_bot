@@ -20,14 +20,20 @@ SLEEP_AFTER_EXCEPTION = timedelta(minutes=1).seconds
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     await message.answer_chat_action('typing')
+    logging.info('>>> User[%s:@%s]: %r', message.chat.id, message.chat.username, message.text)
     await message.reply('Штош, ну привет!')
 
 
 @dp.message_handler()
-async def echo(message: types.Message):
+async def send_ai_answer(message: types.Message):
+    chat_id: int = message.chat.id
+    username: str = message.chat.username
+    request_message: str = message.text
+
     await message.answer_chat_action('typing')
+    logging.info('>>> User[%s:@%s]: %r', chat_id, username, request_message)
     answer = await ai.get_answer(message.text)
-    await message.answer_chat_action('typing')
+    logging.info('<<< User[%s:@%s]: %r', chat_id, username, answer)
     await message.answer(answer)
 
 
@@ -41,5 +47,5 @@ if __name__ == '__main__':
         try:
             executor.start_polling(dp, skip_updates=True)
         except Exception as ex:
-            logging.error(f'Error found: {repr(ex)}. Restarting')
+            logging.error(f'Error found: %r. Restarting...', ex)
             time.sleep(SLEEP_AFTER_EXCEPTION)
