@@ -10,7 +10,7 @@ class AIWrapper:
     top_p: float = 1.0
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
-    stop: List[str, str] = ['#', ';']
+    stop: List[str] = ['#', ';']
 
     def __init__(self, token: str):
         openai.api_key = token
