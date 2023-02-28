@@ -56,7 +56,7 @@ async def send_ai_answer_from_group(message: types.Message):
 @dp.message_handler(lambda message: message.chat.id > 0)
 async def send_ai_answer_from_dm(message: types.Message):
     answer = await get_ai_answer(message)
-    await message.answer(answer)
+    await message.reply(answer)
 
 
 if __name__ == '__main__':
