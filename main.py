@@ -16,6 +16,18 @@ dp = Dispatcher(bot)
 SLEEP_AFTER_EXCEPTION = timedelta(minutes=1).seconds
 
 
+@dp.message_handler(commands=['start'])
+async def send_welcome(message: types.Message):
+    chat_id: int = message.chat.id
+    user_id: str = message.from_user.id
+    username: str = message.from_user.username
+    request_message: str = message.text
+
+    await message.answer_chat_action('typing')
+    logging.info('>>> User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
+    await message.reply('Штош, ну привет!')
+
+
 async def get_ai_answer(message: types.Message, request_message: str | None = None) -> str:
     chat_id: int = message.chat.id
     user_id: str = message.from_user.id
@@ -29,12 +41,6 @@ async def get_ai_answer(message: types.Message, request_message: str | None = No
     return answer
 
 
-@dp.message_handler(lambda message: message.chat.id > 0)
-async def send_ai_answer_from_dm(message: types.Message):
-    answer = await get_ai_answer(message)
-    await message.answer(answer)
-
-
 @dp.message_handler(commands=['cat'])
 async def send_ai_answer_from_group(message: types.Message):
     request_message: str = message.text[4:].strip()
@@ -46,16 +52,10 @@ async def send_ai_answer_from_group(message: types.Message):
     await message.reply(answer)
 
 
-@dp.message_handler(commands=['start'])
-async def send_welcome(message: types.Message):
-    chat_id: int = message.chat.id
-    user_id: str = message.from_user.id
-    username: str = message.from_user.username
-    request_message: str = message.text
-
-    await message.answer_chat_action('typing')
-    logging.info('>>> User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
-    await message.reply('Штош, ну привет!')
+@dp.message_handler(lambda message: message.chat.id > 0)
+async def send_ai_answer_from_dm(message: types.Message):
+    answer = await get_ai_answer(message)
+    await message.answer(answer)
 
 
 if __name__ == '__main__':
