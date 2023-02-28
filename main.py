@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from datetime import timedelta
+from typing import Optional
 
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
@@ -28,7 +29,7 @@ async def send_welcome(message: types.Message):
     await message.reply('Штош, ну привет!')
 
 
-async def get_ai_answer(message: types.Message, request_message: str | None = None) -> str:
+async def get_ai_answer(message: types.Message, request_message: Optional[str] = None) -> str:
     chat_id: int = message.chat.id
     user_id: str = message.from_user.id
     username: str = message.from_user.username
