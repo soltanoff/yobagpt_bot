@@ -9,10 +9,18 @@ Simple `ChatGPT` and `aiogram` integration.
 
 ## How to run
 
+### Without Docker:
+
 - Make virtual environment
 - Install package requirements
-- Create `.env` or set env-variables as you like (example: `.env.default`)
-- Run it! :) 
+- Create `.env` or set env-variables as you like (example: [.env.default](.env.default))
+- Run it! :)
+
+### With Docker
+
+- Create `.env` or set env-variables as you like (example: [.env.default](.env.default)
+  and see [docker-compose.yml](docker-compose.yml))
+- Run it! :)
 
 ## TODO
 
