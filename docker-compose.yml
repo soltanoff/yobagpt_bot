@@ -9,3 +9,5 @@ services:
     command: python main.py
     environment:
       - LOG_LEVEL=INFO
+    env_file:
+      - .env
