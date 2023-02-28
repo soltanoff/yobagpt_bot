@@ -5,12 +5,12 @@ import openai
 
 class AIWrapper:
     model: str = 'text-davinci-003'
-    temperature: float = 0.4
+    temperature: float = 0.25
     max_tokens: int = 2048
     top_p: float = 1.0
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
-    stop: List[str] = ['#', ';']
+    stop: List[str] = ['Q:', 'A:']
 
     def __init__(self, token: str):
         openai.api_key = token
@@ -25,6 +25,6 @@ class AIWrapper:
             top_p=cls.top_p,
             frequency_penalty=cls.frequency_penalty,
             presence_penalty=cls.presence_penalty,
-            stop=cls.stop,
+            # stop=cls.stop,
         )
         return ''.join(x['text'] for x in response['choices'])

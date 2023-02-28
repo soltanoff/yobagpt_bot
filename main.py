@@ -5,6 +5,7 @@ from datetime import timedelta
 from typing import Optional
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import ParseMode
 from dotenv import load_dotenv
 
 from ai import AIWrapper
@@ -50,13 +51,13 @@ async def send_ai_answer_from_group(message: types.Message):
         return
 
     answer = await get_ai_answer(message, request_message)
-    await message.reply(answer)
+    await message.reply(answer, parse_mode=ParseMode.MARKDOWN)
 
 
 @dp.message_handler(lambda message: message.chat.id > 0)
 async def send_ai_answer_from_dm(message: types.Message):
     answer = await get_ai_answer(message)
-    await message.reply(answer)
+    await message.reply(answer, parse_mode=ParseMode.MARKDOWN)
 
 
 if __name__ == '__main__':
