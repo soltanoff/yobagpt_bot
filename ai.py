@@ -27,4 +27,4 @@ class AIWrapper:
             presence_penalty=cls.presence_penalty,
             stop=cls.stop,
         )
-        return ''.join(x['text'] for x in response['choices'][0])
+        return ''.join(x['text'] for x in response['choices'])
