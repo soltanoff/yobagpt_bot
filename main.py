@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, Tuple
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ParseMode
@@ -30,7 +30,7 @@ async def send_welcome(message: types.Message):
     await message.reply('Штош, ну привет!')
 
 
-async def get_ai_answer(message: types.Message, request_message: Optional[str] = None) -> str:
+async def get_ai_answer(message: types.Message, request_message: Optional[str] = None) -> Tuple[str, Optional[str]]:
     chat_id: int = message.chat.id
     user_id: str = message.from_user.id
     username: str = message.from_user.username
@@ -40,7 +40,7 @@ async def get_ai_answer(message: types.Message, request_message: Optional[str] =
     logging.info('>>> User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
     answer = await ai.get_answer(request_message)
     logging.info('<<< User[%s|%s:@%s]: %r', chat_id, user_id, username, answer)
-    return answer
+    return answer, ParseMode.MARKDOWN if '```' in answer else None
 
 
 @dp.message_handler(commands=['cat'])
@@ -50,14 +50,14 @@ async def send_ai_answer_from_group(message: types.Message):
         await message.reply('Краткость - сестра таланта, да?')
         return
 
-    answer = await get_ai_answer(message, request_message)
-    await message.reply(answer, parse_mode=ParseMode.MARKDOWN)
+    answer, parse_mode = await get_ai_answer(message, request_message)
+    await message.reply(answer, parse_mode=parse_mode)
 
 
 @dp.message_handler(lambda message: message.chat.id > 0)
 async def send_ai_answer_from_dm(message: types.Message):
-    answer = await get_ai_answer(message)
-    await message.reply(answer, parse_mode=ParseMode.MARKDOWN)
+    answer, parse_mode = await get_ai_answer(message)
+    await message.reply(answer, parse_mode=parse_mode)
 
 
 if __name__ == '__main__':
