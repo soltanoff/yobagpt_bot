@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     while True:
         try:
-            executor.start_polling(dp, skip_updates=True)
+            executor.start_polling(dp, skip_updates=False)
         except Exception as ex:
             logging.error('Error found: %r. Restarting...', ex)
             time.sleep(SLEEP_AFTER_EXCEPTION)
