@@ -1,3 +1,4 @@
+import asyncio
 from functools import partial
 from time import time
 
@@ -17,6 +18,7 @@ class AIWrapper:
     def __init__(self, openai_token: str, chat_access_token: str):
         openai.api_key = openai_token
         self.chatbot = AsyncChatbot(config={'access_token': chat_access_token})
+        self.lock = asyncio.Lock()
 
     async def get_answer(self, message: str, typing_event: partial) -> str:
         if not message.endswith('.'):
@@ -24,12 +26,23 @@ class AIWrapper:
 
         answer = ''
         start_time = time()
-        async for data in self.chatbot.ask(message):
+        while self.lock.locked():
             if time() - start_time > 3:
                 start_time = time()
                 await typing_event()
+            await asyncio.sleep(1)
 
-            answer = data['message']
+        if time() - start_time > 3:
+            await typing_event()
+
+        async with self.lock:
+            start_time = time()
+            async for data in self.chatbot.ask(message):
+                if time() - start_time > 3:
+                    start_time = time()
+                    await typing_event()
+
+                answer = data['message']
 
         if not answer:
             answer = 'Мне нечего ответить :('
