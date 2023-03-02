@@ -98,6 +98,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         level=logging.getLevelName(os.getenv('LOG_LEVEL')),
         format='%(levelname)9s | %(asctime)s | %(name)30s | %(filename)20s | %(lineno)6s | %(message)s',
+        force=True,
     )
 
     while True:
