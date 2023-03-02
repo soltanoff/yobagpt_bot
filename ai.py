@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from functools import partial
 from time import time
 
@@ -35,7 +36,8 @@ class AIWrapper:
         if time() - start_time > 3:
             await typing_event()
 
-        async with self.lock:
+        try:
+            await self.lock.acquire()
             start_time = time()
             async for data in self.chatbot.ask(message):
                 if time() - start_time > 3:
@@ -43,6 +45,16 @@ class AIWrapper:
                     await typing_event()
 
                 answer = data['message']
+        except Exception as ex:
+            if 'Something went wrong, please try reloading the conversation' in str(ex):
+                self.chatbot.reset_chat()
+                self.lock.locked() and self.lock.release()
+                return await self.get_answer(message, typing_event=typing_event)
+
+            logging.exception('Unexpected error: %r', ex, exc_info=ex)
+            answer = 'Мне нечего ответить. Кажется я устал :('
+        finally:
+            self.lock.locked() and self.lock.release()
 
         if not answer:
             answer = 'Мне нечего ответить :('
