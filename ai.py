@@ -1,3 +1,6 @@
+from functools import partial
+from time import time
+
 import openai
 from revChatGPT.V1 import AsyncChatbot
 
@@ -15,12 +18,17 @@ class AIWrapper:
         openai.api_key = openai_token
         self.chatbot = AsyncChatbot(config={'access_token': chat_access_token})
 
-    async def get_answer(self, message: str) -> str:
+    async def get_answer(self, message: str, typing_event: partial) -> str:
         if not message.endswith('.'):
             message += '.'
 
         answer = ''
+        start_time = time()
         async for data in self.chatbot.ask(message):
+            if time() - start_time > 3:
+                start_time = time()
+                await typing_event()
+
             answer = data['message']
 
         if not answer:

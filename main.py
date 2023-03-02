@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from datetime import timedelta
+from functools import partial
 from typing import Optional, Tuple
 
 from aiogram import Bot, Dispatcher, executor, types
@@ -26,7 +27,7 @@ async def get_ai_answer(message: types.Message, request_message: Optional[str] =
 
     await message.answer_chat_action('typing')
     logging.info('>>> User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
-    answer = await ai.get_answer(request_message)
+    answer = await ai.get_answer(request_message, typing_event=partial(message.answer_chat_action, 'typing'))
     logging.info('<<< User[%s|%s:@%s]: %r', chat_id, user_id, username, answer)
     return answer, ParseMode.MARKDOWN if '```' in answer else None
 
