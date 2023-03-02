@@ -1,4 +1,5 @@
 import openai
+from revChatGPT.V1 import AsyncChatbot
 
 
 class AIWrapper:
@@ -10,11 +11,25 @@ class AIWrapper:
     presence_penalty: float = 0.0
     image_size: str = '512x512'  # '1024x1024'
 
-    def __init__(self, token: str):
-        openai.api_key = token
+    def __init__(self, openai_token: str, chat_access_token: str):
+        openai.api_key = openai_token
+        self.chatbot = AsyncChatbot(config={'access_token': chat_access_token})
+
+    async def get_answer(self, message: str) -> str:
+        if not message.endswith('.'):
+            message += '.'
+
+        answer = ''
+        async for data in self.chatbot.ask(message):
+            answer = data['message']
+
+        if not answer:
+            answer = 'Мне нечего ответить :('
+
+        return answer
 
     @classmethod
-    async def get_answer(cls, message: str) -> str:
+    async def get_answer_v2(cls, message: str) -> str:
         if not message.endswith('.'):
             message += '.'
 

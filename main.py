@@ -12,7 +12,7 @@ from ai import AIWrapper
 
 load_dotenv()
 
-ai = AIWrapper(token=os.getenv('OPEANAI_API_KEY'))
+ai = AIWrapper(openai_token=os.getenv('OPEANAI_API_KEY'), chat_access_token=os.getenv('CHAT_ACCESS_TOKEN'))
 bot = Bot(token=os.getenv('TELEGRAM_API_KEY'))
 dp = Dispatcher(bot)
 SLEEP_AFTER_EXCEPTION = timedelta(minutes=1).seconds

@@ -21,8 +21,3 @@ Simple `ChatGPT` and `aiogram` integration.
 - Create `.env` or set env-variables as you like (example: [.env.default](.env.default)
   and see [docker-compose.yml](docker-compose.yml))
 - Run it! :)
-
-## TODO
-
-- Chat history for better answers
-- Reconfugure AI model settings

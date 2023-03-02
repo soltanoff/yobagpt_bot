@@ -1,4 +1,5 @@
 python-dotenv==1.0.0
 openai==0.26.5
 aiogram==2.25.1
+revchatgpt==2.3.21
 # sqlalchemy==2.0.4
