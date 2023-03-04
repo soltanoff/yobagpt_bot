@@ -9,6 +9,8 @@ Simple `ChatGPT` and `aiogram` integration.
 
 ## Config and environments variable
 
+Config based on `.env` creation or set env-variables as you like (example: [.env.default](.env.default))
+
 ### `LOG_LEVEL`
 
 By default: `logging.INFO`
