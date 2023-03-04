@@ -7,6 +7,30 @@
 
 Simple `ChatGPT` and `aiogram` integration.
 
+## Config and environments variable
+
+### `LOG_LEVEL`
+
+By default: `logging.INFO`
+
+### `TELEGRAM_API_KEY`
+
+- Find [BotFather](https://t.me/BotFather) account
+- Create a new bot
+- Generate API token and put it to config
+
+### `CHAT_ACCESS_TOKEN`
+
+- It is valid for 4 weeks
+- Can be found if you log in to `https://chat.openai.com/` and then go to `https://chat.openai.com/api/auth/session`
+- Put `accessToken` to config
+
+### `OPEANAI_API_KEY`
+
+- Log in to `https://platform.openai.com/account/api-keys`
+- Create a new secret key
+- Put a new secret key to config
+
 ## How to run
 
 ### Without Docker:
