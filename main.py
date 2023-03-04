@@ -99,7 +99,7 @@ async def send_ai_answer_from_dm(message: types.Message):
 
 if __name__ == '__main__':
     logging.basicConfig(
-        level=logging.getLevelName(os.getenv('LOG_LEVEL')),
+        level=logging.getLevelName(os.getenv('LOG_LEVEL', default=logging.INFO)),
         format='%(levelname)9s | %(asctime)s | %(name)30s | %(filename)20s | %(lineno)6s | %(message)s',
         force=True,
     )
