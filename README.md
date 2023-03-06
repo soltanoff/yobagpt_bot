@@ -68,3 +68,11 @@ third-party plugins to check the style and quality of some python code.
 ```shell
 flake8 .
 ```
+
+### Logs format
+
+```shell
+      INFO | 20xx-03-06 11:19:58,649 |                        aiogram |          executor.py |    362 | Bot: <bot_name_here> [@<bot_link_here>bot]
+   WARNING | 2023-03-06 11:19:58,830 |                        aiogram |          executor.py |    358 | Updates were skipped successfully.
+      INFO | 2023-03-06 11:19:58,839 |  aiogram.dispatcher.dispatcher |        dispatcher.py |    358 | Start polling.
+```
