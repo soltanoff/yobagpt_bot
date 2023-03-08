@@ -2,9 +2,10 @@ import asyncio
 import logging
 from functools import partial
 from time import time
+from typing import Optional
 
 import openai
-from revChatGPT.V1 import AsyncChatbot
+from revChatGPT import V1
 
 
 class AIWrapper:
@@ -16,9 +17,10 @@ class AIWrapper:
     presence_penalty: float = 0.0
     image_size: str = '512x512'  # '1024x1024'
 
-    def __init__(self, openai_token: str, chat_access_token: str):
+    def __init__(self, openai_token: str, chat_access_token: str, chatgpt_proxy_url: Optional[str]):
         openai.api_key = openai_token
-        self.chatbot = AsyncChatbot(config={'access_token': chat_access_token})
+        chatgpt_proxy_url and setattr(V1, 'BASE_URL', chatgpt_proxy_url)
+        self.chatbot = V1.AsyncChatbot(config={'access_token': chat_access_token})
         self.lock = asyncio.Lock()
 
     async def get_answer(self, message: str, typing_event: partial) -> str:

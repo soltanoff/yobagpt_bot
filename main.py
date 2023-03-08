@@ -13,7 +13,11 @@ from ai import AIWrapper
 
 load_dotenv()
 
-ai = AIWrapper(openai_token=os.getenv('OPEANAI_API_KEY'), chat_access_token=os.getenv('CHAT_ACCESS_TOKEN'))
+ai = AIWrapper(
+    openai_token=os.getenv('OPEANAI_API_KEY'),
+    chat_access_token=os.getenv('CHAT_ACCESS_TOKEN'),
+    chatgpt_proxy_url=os.getenv('CHATGPT_PROXY_URL'),
+)
 bot = Bot(token=os.getenv('TELEGRAM_API_KEY'))
 dp = Dispatcher(bot)
 SLEEP_AFTER_EXCEPTION = timedelta(minutes=1).seconds
