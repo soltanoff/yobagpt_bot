@@ -15,6 +15,10 @@ Config based on `.env` creation or set env-variables as you like (example: [.env
 
 By default: `logging.INFO`
 
+### `CHATGPT_PROXY_URL`
+
+General ChatGPT API proxy URL. By default: `https://chat.duti.tech/`
+
 ### `TELEGRAM_API_KEY`
 
 - Find [BotFather](https://t.me/BotFather) account
