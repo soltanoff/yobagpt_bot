@@ -28,7 +28,7 @@ def special_command_handler(dispatcher: Dispatcher, command: str) -> Callable:
     def decorator(callback: Callable) -> Callable:
         @wraps(callback)
         async def wrapper(message: types.Message) -> None:
-            request_message: str = message.text[len(command):].strip()
+            request_message: str = message.text[len(command) + 1:].strip()
             if len(request_message) < MESSAGE_SIZE_LIMIT:
                 await message.reply('Краткость - сестра таланта, да?')
                 return
