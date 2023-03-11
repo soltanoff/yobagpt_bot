@@ -36,7 +36,7 @@ def special_command_handler(dispatcher: Dispatcher, command: str) -> Callable:
             await callback(message, request_message)
 
         dispatcher.message_handler(commands=[command])(wrapper)
-        return wrapper
+        return callback
 
     return decorator
 
@@ -89,15 +89,10 @@ async def send_image(message: types.Message, request_message: str):
     await message.reply(answer, parse_mode=ParseMode.HTML)
 
 
-@special_command_handler(dp, command='cat')
-async def send_ai_answer_from_group(message: types.Message, request_message: str):
-    answer, parse_mode = await get_ai_answer(message, request_message)
-    await message.reply(answer, parse_mode=parse_mode)
-
-
 @dp.message_handler(lambda message: message.chat.id > 0)
-async def send_ai_answer_from_dm(message: types.Message):
-    answer, parse_mode = await get_ai_answer(message)
+@special_command_handler(dp, command='cat')
+async def send_ai_answer(message: types.Message, request_message: Optional[str] = None):
+    answer, parse_mode = await get_ai_answer(message, request_message)
     await message.reply(answer, parse_mode=parse_mode)
 
 
