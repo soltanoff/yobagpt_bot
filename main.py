@@ -3,7 +3,7 @@ import os
 import time
 from datetime import timedelta
 from functools import partial, wraps
-from typing import Optional, Tuple, Callable
+from typing import Optional, Callable
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ParseMode
@@ -41,19 +41,6 @@ def special_command_handler(dispatcher: Dispatcher, command: str) -> Callable:
     return decorator
 
 
-async def get_ai_answer(message: types.Message, request_message: Optional[str] = None) -> Tuple[str, Optional[str]]:
-    chat_id: int = message.chat.id
-    user_id: str = message.from_user.id
-    username: str = message.from_user.username
-    request_message: str = request_message or message.text.strip()
-
-    await message.answer_chat_action('typing')
-    logging.info('>>> User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
-    answer = await ai.get_answer(request_message, typing_event=partial(message.answer_chat_action, 'typing'))
-    logging.info('<<< User[%s|%s:@%s]: %r', chat_id, user_id, username, answer)
-    return answer, ParseMode.MARKDOWN if '```' in answer else None
-
-
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
     chat_id: int = message.chat.id
@@ -73,7 +60,7 @@ async def send_report(message: types.Message, request_message: str):
 
     await message.answer_chat_action('typing')
     logging.warning('[REPORT] User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
-    await message.reply('✅ Отчет отправлен, спасибо!', parse_mode=ParseMode.HTML)
+    await message.reply('✅ Отчет отправлен, спасибо!')
 
 
 @special_command_handler(dp, command='img')
@@ -92,8 +79,16 @@ async def send_image(message: types.Message, request_message: str):
 @dp.message_handler(lambda message: message.chat.id > 0)
 @special_command_handler(dp, command='cat')
 async def send_ai_answer(message: types.Message, request_message: Optional[str] = None):
-    answer, parse_mode = await get_ai_answer(message, request_message)
-    await message.reply(answer, parse_mode=parse_mode)
+    chat_id: int = message.chat.id
+    user_id: str = message.from_user.id
+    username: str = message.from_user.username
+    request_message: str = request_message or message.text.strip()
+
+    await message.answer_chat_action('typing')
+    logging.info('>>> User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
+    answer = await ai.get_answer(request_message, typing_event=partial(message.answer_chat_action, 'typing'))
+    logging.info('<<< User[%s|%s:@%s]: %r', chat_id, user_id, username, answer)
+    await message.reply(answer, parse_mode=ParseMode.MARKDOWN if '```' in answer else None)
 
 
 if __name__ == '__main__':
