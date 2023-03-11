@@ -17,7 +17,7 @@ By default: `logging.INFO`
 
 ### `CHATGPT_PROXY_URL`
 
-General ChatGPT API proxy URL. By default: `https://chat.duti.tech/`
+General ChatGPT API proxy URL. By default: `https://bypass.duti.tech/api/`
 
 ### `TELEGRAM_API_KEY`
 
