@@ -16,7 +16,8 @@ load_dotenv()
 ai = AIWrapper(
     openai_token=os.getenv('OPEANAI_API_KEY'),
     chat_access_token=os.getenv('CHAT_ACCESS_TOKEN'),
-    chatgpt_proxy_url=os.getenv('CHATGPT_PROXY_URL'),
+    chatgpt_proxy_url=os.getenv('CHATGPT_PROXY_URL', default=None),
+    use_v2=os.getenv('USE_V2', default='0'),
 )
 bot = Bot(token=os.getenv('TELEGRAM_API_KEY'))
 dp = Dispatcher(bot)
