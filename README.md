@@ -11,18 +11,6 @@ Simple `ChatGPT` and `aiogram` integration.
 
 Config based on `.env` creation or set env-variables as you like (example: [.env.default](.env.default))
 
-### `LOG_LEVEL`
-
-By default: `logging.INFO`
-
-### `USE_V2`
-
-Params for enable the openai wrapper. By default: `0`
-
-### `CHATGPT_PROXY_URL`
-
-General ChatGPT API proxy URL. By default: `None`
-
 ### `TELEGRAM_API_KEY`
 
 - Find [BotFather](https://t.me/BotFather) account
@@ -40,6 +28,18 @@ General ChatGPT API proxy URL. By default: `None`
 - Log in to `https://platform.openai.com/account/api-keys`
 - Create a new secret key
 - Put a new secret key to config
+
+### `LOG_LEVEL` (optional)
+
+By default: `logging.INFO`
+
+### `USE_V2` (optional)
+
+Params for enable the openai wrapper. By default: `0`
+
+### `CHATGPT_PROXY_URL` (optional)
+
+General ChatGPT API proxy URL. By default: `None`
 
 ## How to run
 
