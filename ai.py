@@ -7,6 +7,8 @@ from typing import Optional
 import openai
 from revChatGPT import V1
 
+from utils import api_exception_safe, api_background_call
+
 
 class AIWrapper:
     model: str = 'text-davinci-003'
@@ -26,14 +28,18 @@ class AIWrapper:
     ):
         openai.api_key = openai_token
         chatgpt_proxy_url and setattr(V1, 'BASE_URL', chatgpt_proxy_url)
-        self.chatbot = V1.AsyncChatbot(config={'access_token': chat_access_token})
-        self.lock = asyncio.Lock()
-        self.use_v2 = use_v2 == '1'
+        self._chatbot = V1.AsyncChatbot(config={'access_token': chat_access_token})
+        self._lock = asyncio.Lock()
+        self._use_v2 = use_v2 == '1'
 
-    async def _get_answer_v1(self, message: str, typing_event: partial) -> str:
+    async def _get_answer_v1(
+        self,
+        message: str,
+        typing_event: partial,
+    ) -> str:
         answer = ''
         start_time = time()
-        while self.lock.locked():
+        while self._lock.locked():
             if time() - start_time > 3:
                 start_time = time()
                 await typing_event()
@@ -43,9 +49,9 @@ class AIWrapper:
             await typing_event()
 
         try:
-            await self.lock.acquire()
+            await self._lock.acquire()
             start_time = time()
-            async for data in self.chatbot.ask(message):
+            async for data in self._chatbot.ask(message):
                 if time() - start_time > 3:
                     start_time = time()
                     await typing_event()
@@ -53,14 +59,14 @@ class AIWrapper:
                 answer = data['message']
         except Exception as ex:
             if 'Something went wrong, please try reloading the conversation' in str(ex):
-                self.chatbot.reset_chat()
-                self.lock.locked() and self.lock.release()
+                self._chatbot.reset_chat()
+                self._lock.locked() and self._lock.release()
                 return await self.get_answer(message, typing_event=typing_event)
 
-            logging.exception('Unexpected error: %r', ex, exc_info=ex)
-            answer = 'Мне нечего ответить. Кажется я устал :('
+            logging.error('V1 API error: %r. Try to use V2 for emergency case...', ex)
+            answer = await self._get_answer_v2(message, typing_event, start_time)
         finally:
-            self.lock.locked() and self.lock.release()
+            self._lock.locked() and self._lock.release()
 
         if not answer:
             answer = 'Мне нечего ответить :('
@@ -68,8 +74,13 @@ class AIWrapper:
         return answer
 
     @classmethod
-    async def _get_answer_v2(cls, message: str, typing_event: partial) -> str:
-        response_future = asyncio.create_task(
+    async def _get_answer_v2(
+        cls,
+        message: str,
+        typing_event: partial,
+        start_time: Optional[float] = None,
+    ) -> str:
+        response = await api_background_call(
             openai.Completion.acreate(
                 model=cls.model,
                 prompt=message,
@@ -78,34 +89,33 @@ class AIWrapper:
                 top_p=cls.top_p,
                 frequency_penalty=cls.frequency_penalty,
                 presence_penalty=cls.presence_penalty,
-            )
+            ),
+            typing_event=typing_event,
+            start_time=start_time,
         )
-        start_time = time()
-        while not response_future.done():
-            if time() - start_time > 3:
-                start_time = time()
-                await typing_event()
-            await asyncio.sleep(1)
-
-        answer = response_future.result()['choices'][0]['text'].strip()
+        answer = response['choices'][0]['text'].strip()
         if not answer:
             answer = 'Мне нечего ответить :('
 
         return answer
 
+    @api_exception_safe
     async def get_answer(self, message: str, typing_event: partial) -> str:
         if not message.endswith('.'):
             message += '.'
 
-        if self.use_v2:
+        if self._use_v2:
             return await self._get_answer_v2(message, typing_event)
         return await self._get_answer_v1(message, typing_event)
 
-    @classmethod
-    async def get_image(cls, message: str) -> str:
-        response = await openai.Image.acreate(
-            prompt=message,
-            n=1,
-            size=cls.image_size,
+    @api_exception_safe
+    async def get_image(self, message: str, typing_event: partial) -> str:
+        response = await api_background_call(
+            openai.Image.acreate(
+                prompt=message,
+                n=1,
+                size=self.image_size,
+            ),
+            typing_event=typing_event,
         )
         return f'Готово<a href="{response["data"][0]["url"]}">.</a>'
