@@ -15,9 +15,13 @@ Config based on `.env` creation or set env-variables as you like (example: [.env
 
 By default: `logging.INFO`
 
+### `USE_V2`
+
+Params for enable the openai wrapper. By default: `0`
+
 ### `CHATGPT_PROXY_URL`
 
-General ChatGPT API proxy URL. By default: `https://bypass.duti.tech/api/`
+General ChatGPT API proxy URL. By default: `None`
 
 ### `TELEGRAM_API_KEY`
 
