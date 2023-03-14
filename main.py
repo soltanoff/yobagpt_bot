@@ -1,15 +1,15 @@
 import logging
 import os
 import time
-from datetime import timedelta
-from functools import partial, wraps
-from typing import Optional, Callable
+from functools import partial
+from typing import Optional
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ParseMode
 from dotenv import load_dotenv
 
 from ai import AIWrapper
+from utils import special_command_handler, SLEEP_AFTER_EXCEPTION
 
 load_dotenv()
 
@@ -21,29 +21,10 @@ ai = AIWrapper(
 )
 bot = Bot(token=os.getenv('TELEGRAM_API_KEY'))
 dp = Dispatcher(bot)
-SLEEP_AFTER_EXCEPTION = timedelta(minutes=1).seconds
-MESSAGE_SIZE_LIMIT = 10
-
-
-def special_command_handler(dispatcher: Dispatcher, command: str) -> Callable:
-    def decorator(callback: Callable) -> Callable:
-        @wraps(callback)
-        async def wrapper(message: types.Message) -> None:
-            request_message: str = message.text[len(command) + 1:].strip()
-            if len(request_message) < MESSAGE_SIZE_LIMIT:
-                await message.reply('Краткость - сестра таланта, да?')
-                return
-
-            await callback(message, request_message)
-
-        dispatcher.message_handler(commands=[command])(wrapper)
-        return callback
-
-    return decorator
 
 
 @dp.message_handler(commands=['start'])
-async def send_welcome(message: types.Message):
+async def send_welcome(message: types.Message) -> None:
     chat_id: int = message.chat.id
     user_id: str = message.from_user.id
     username: str = message.from_user.username
@@ -54,7 +35,7 @@ async def send_welcome(message: types.Message):
 
 
 @special_command_handler(dp, command='report')
-async def send_report(message: types.Message, request_message: str):
+async def send_report(message: types.Message, request_message: str) -> None:
     chat_id: int = message.chat.id
     user_id: str = message.from_user.id
     username: str = message.from_user.username
@@ -65,21 +46,21 @@ async def send_report(message: types.Message, request_message: str):
 
 
 @special_command_handler(dp, command='img')
-async def send_image(message: types.Message, request_message: str):
+async def send_image(message: types.Message, request_message: str) -> None:
     chat_id: int = message.chat.id
     user_id: str = message.from_user.id
     username: str = message.from_user.username
 
     await message.answer_chat_action('typing')
     logging.info('>>> User[%s|%s:@%s]: %r', chat_id, user_id, username, request_message)
-    answer = await ai.get_image(request_message)
+    answer = await ai.get_image(request_message, typing_event=partial(message.answer_chat_action, 'typing'))
     logging.info('<<< User[%s|%s:@%s]: %r', chat_id, user_id, username, answer)
     await message.reply(answer, parse_mode=ParseMode.HTML)
 
 
 @dp.message_handler(lambda message: message.chat.id > 0)
 @special_command_handler(dp, command='cat')
-async def send_ai_answer(message: types.Message, request_message: Optional[str] = None):
+async def send_ai_answer(message: types.Message, request_message: Optional[str] = None) -> None:
     chat_id: int = message.chat.id
     user_id: str = message.from_user.id
     username: str = message.from_user.username
