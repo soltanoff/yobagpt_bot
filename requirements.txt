@@ -1,4 +1,4 @@
 python-dotenv==1.0.0
 openai==0.27.2
 aiogram==2.25.1
-revchatgpt==3.3.5
+revchatgpt==4.0.6
